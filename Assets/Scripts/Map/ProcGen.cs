@@ -4,7 +4,7 @@ using UnityEngine;
 sealed class ProcGen {
 
   /// Generate a new dungeon map.
-  public void GenerateDungeon(int mapWidth, int mapHeight, int roomMaxSize, int roomMinSize, int maxRooms, int maxMonstersPerRoom, List<RectangularRoom> rooms) {
+  public void GenerateDungeon(int mapWidth, int mapHeight, int roomMaxSize, int roomMinSize, int maxRooms, int maxMonstersPerRoom, int maxItemsPerRoom, List<RectangularRoom> rooms) {
     for (int roomNum = 0; roomNum < maxRooms; roomNum++) {
         int roomWidth = Random.Range(roomMinSize, roomMaxSize);
         int roomHeight = Random.Range(roomMinSize, roomMaxSize);
@@ -42,7 +42,7 @@ sealed class ProcGen {
         }
 
         // Place monsters in the room.
-        PlaceActors(newRoom, maxMonstersPerRoom);
+        PlaceEntities(rooms, maxMonstersPerRoom, maxItemsPerRoom);
         rooms.Add(newRoom);
     }
 
@@ -80,7 +80,7 @@ sealed class ProcGen {
 }
 
   /// Return an L-shaped tunnel between these two points using Bresenham lines.
-  /// </summary>
+
   private void TunnelBetween(RectangularRoom oldRoom, RectangularRoom newRoom) {
     Vector2Int oldRoomCenter = oldRoom.Center();
     Vector2Int newRoomCenter = newRoom.Center();
@@ -129,38 +129,86 @@ sealed class ProcGen {
       MapManager.instance.ObstacleMap.SetTile(pos, null);
     }
     MapManager.instance.FloorMap.SetTile(pos, MapManager.instance.FloorTile);
-  }
+    }
+  private void PlaceEntities(List<RectangularRoom> rooms, int maximumMonsters, int maximumItems) {
+    foreach (var room in rooms) {
+        int numberOfMonsters = Random.Range(0, maximumMonsters + 1);
+        int numberOfItems = Random.Range(0, maximumItems + 1);
 
-  private void PlaceActors(RectangularRoom newRoom, int maximumMonsters) {
-    int numberOfMonsters = Random.Range(0, maximumMonsters + 1); // Select a random number of monsters
+        // Place monsters
+        for (int monster = 0; monster < numberOfMonsters;) {
+            int x = Random.Range(room.X + 1, room.X + room.Width - 1); // Randomize position inside room bounds
+            int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
 
-    for (int monster = 0; monster < numberOfMonsters;) {
-        int x = Random.Range(newRoom.X, newRoom.X + newRoom.Width);
-        int y = Random.Range(newRoom.Y, newRoom.Y + newRoom.Height);
+            // Skip spawn if it's at the edge (walls) of the room
+            if (x == room.X || x == room.X + room.Width - 1 || y == room.Y || y == room.Y + room.Height - 1) {
+                continue;
+            }
 
-        // Make sure the monster is not placed on the room's wall
-        if (x == newRoom.X || x == newRoom.X + newRoom.Width - 1 || y == newRoom.Y || y == newRoom.Y + newRoom.Height - 1) {
-            continue;
-        }
+            // Check if there are any existing actors or items at this position
+            bool overlap = false;
+            foreach (var actor in GameManager.instance.Actors) {
+                Vector3Int actorPos = MapManager.instance.FloorMap.WorldToCell(actor.transform.position);
+                if (actorPos.x == x && actorPos.y == y) {
+                    overlap = true;
+                    break;
+                }
+            }
 
-        // Check if the position is already occupied by another actor
-        for (int actor = 0; actor < GameManager.instance.Actors.Count; actor++) {
-            Vector3Int pos = MapManager.instance.FloorMap.WorldToCell(GameManager.instance.Actors[actor].transform.position);
+            foreach (var entity in GameManager.instance.Entities) {
+                Vector3Int entityPos = MapManager.instance.FloorMap.WorldToCell(entity.transform.position);
+                if (entityPos.x == x && entityPos.y == y) {
+                    overlap = true;
+                    break;
+                }
+            }
 
-            if (pos.x == x && pos.y == y) {
-                return; // Skip if the position is already occupied
+            // If there's no overlap, spawn a monster
+            if (!overlap) {
+                if (Random.value < 0.8f) {
+                    MapManager.instance.CreateEntity("FireSprite", new Vector2(x, y));
+                } else {
+                    MapManager.instance.CreateEntity("FlyMob", new Vector2(x, y));
+                }
+                monster++;
             }
         }
 
-        // Create either a "FireSprite" or "FlyMob" at the chosen position
-        if (Random.value < 0.8f) {
-            MapManager.instance.CreateEntity("FireSprite", new Vector2(x, y));
-        } else {
-            MapManager.instance.CreateEntity("FlyMob", new Vector2(x, y));
+        // Place items
+        for (int item = 0; item < numberOfItems;) {
+            int x = Random.Range(room.X + 1, room.X + room.Width - 1); // Randomize position inside room bounds
+            int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
+
+            // Skip spawn if it's at the edge (walls) of the room
+            if (x == room.X || x == room.X + room.Width - 1 || y == room.Y || y == room.Y + room.Height - 1) {
+                continue;
+            }
+
+            // Check if there are any existing actors or items at this position
+            bool overlap = false;
+            foreach (var actor in GameManager.instance.Actors) {
+                Vector3Int actorPos = MapManager.instance.FloorMap.WorldToCell(actor.transform.position);
+                if (actorPos.x == x && actorPos.y == y) {
+                    overlap = true;
+                    break;
+                }
+            }
+
+            foreach (var entity in GameManager.instance.Entities) {
+                Vector3Int entityPos = MapManager.instance.FloorMap.WorldToCell(entity.transform.position);
+                if (entityPos.x == x && entityPos.y == y) {
+                    overlap = true;
+                    break;
+                }
+            }
+
+            // If there's no overlap, spawn an item
+            if (!overlap) {
+                MapManager.instance.CreateEntity("Potion of Heart", new Vector2(x, y));
+                item++;
+            }
         }
-      monster++; // Increment the monster count
     }
   }
-
-
 }
+

@@ -13,6 +13,8 @@ public class MapManager : MonoBehaviour {
   [SerializeField] private int maxRooms = 30;
   [SerializeField] private int maxMonstersPerRoom = 2;
 
+  [SerializeField] private int maxItemsPerRoom = 2;
+
   [Header("Tiles")]
   [SerializeField] private TileBase floorTile;
   [SerializeField] private TileBase wallTile;
@@ -48,7 +50,7 @@ public class MapManager : MonoBehaviour {
 
   private void Start() {
     ProcGen procGen = new ProcGen();
-    procGen.GenerateDungeon(width, height, roomMaxSize, roomMinSize, maxRooms, maxMonstersPerRoom, rooms);
+    procGen.GenerateDungeon(width, height, roomMaxSize, roomMinSize, maxRooms, maxMonstersPerRoom, maxItemsPerRoom, rooms);
 
     AddTileMapToDictionary(floorMap);
     AddTileMapToDictionary(obstacleMap);
@@ -101,6 +103,9 @@ public class MapManager : MonoBehaviour {
         break;
       case "FlyMob":
         Instantiate(Resources.Load<GameObject>("FlyMob"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity).name = "FlyMob";
+        break;
+      case "Potion of Heart":
+        Instantiate(Resources.Load<GameObject>("Potion of Heart"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity).name = "Potion of Heart";
         break;
       default:
         Debug.LogError("Entity not found");
