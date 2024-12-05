@@ -10,13 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2464538593947872661}
   - component: {fileID: 2464538593947872666}
-  - component: {fileID: -255338895359202319}
-  - component: {fileID: -3760399162246120148}
-  - component: {fileID: 7080760995988981517}
-  - component: {fileID: 460111498010578669}
-  - component: {fileID: 154235667771978317}
+  - component: {fileID: -2557132397182091668}
   m_Layer: 0
-  m_Name: FireSprite
+  m_Name: WaterSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: 977644787
   m_SortingLayer: 3
   m_SortingOrder: 2
-  m_Sprite: {fileID: 1788730933, guid: cb48f661e5aa5644e8d49c52f5933490, type: 3}
+  m_Sprite: {fileID: 182030808, guid: cb48f661e5aa5644e8d49c52f5933490, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -89,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-255338895359202319
+--- !u!114 &-2557132397182091668
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -105,69 +101,5 @@ MonoBehaviour:
   isAlive: 1
   fieldOfViewRange: 8
   fieldOfView: []
-  aI: {fileID: 460111498010578669}
+  aI: {fileID: 0}
   inventory: {fileID: 0}
---- !u!114 &-3760399162246120148
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2464538593947872667}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e17706bf8d494740a0d76040bf0324b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHp: 10
-  hp: 10
-  defense: 0
-  power: 3
-  target: {fileID: 0}
---- !u!114 &7080760995988981517
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2464538593947872667}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45d0e7e6386c83143b2de4c211a1c333, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &460111498010578669
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2464538593947872667}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63f08b6f9c01db74983e4290867506b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  aStar: {fileID: 7080760995988981517}
-  fighter: {fileID: -3760399162246120148}
-  isFighting: 0
---- !u!95 &154235667771978317
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2464538593947872667}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d3062ecceee43df48891ef795821b642, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0

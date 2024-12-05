@@ -910,6 +910,7 @@ MonoBehaviour:
   roomMinSize: 6
   maxRooms: 30
   maxMonstersPerRoom: 2
+  maxItemsPerRoom: 2
   floorTile: {fileID: 11400000, guid: f551bf3de8cf27c4f935da97c75ab631, type: 2}
   wallTile: {fileID: 11400000, guid: 08bb8e11a6e39aa43be17cc9a9425c80, type: 2}
   fogTile: {fileID: 11400000, guid: a530537744468e1418848b6b424e242c, type: 2}
@@ -1521,7 +1522,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1018, y: 16}
+  m_AnchoredPosition: {x: 1018, y: 79}
   m_SizeDelta: {x: 1050, y: 130}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &776804073
@@ -3284,6 +3285,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9d0fb4d490f18f4baf4290a680099e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  eventSystem: {fileID: 450249451}
+  isMenuOpen: 0
   hpSlider: {fileID: 869878361}
   hpSliderText: {fileID: 149981428}
   sameMessageCount: 0
@@ -3292,6 +3295,23 @@ MonoBehaviour:
   messageHistory: {fileID: 1069461636}
   messageHistoryContent: {fileID: 938713461}
   lastFiveMessagesContent: {fileID: 1554025122}
+  isInventoryOpen: 0
+  inventory: {fileID: 0}
+  inventoryContent: {fileID: 0}
+  isDropMenuOpen: 0
+  dropMenu: {fileID: 0}
+  dropMenuContent: {fileID: 0}
+--- !u!114 &1826059379 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1067200980576422272, guid: 676b53e21f595844bb524940df64811a, type: 3}
+  m_PrefabInstance: {fileID: 4675813594347329741}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 977f32f812836084d84b232c11a342c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1830379612
 GameObject:
   m_ObjectHideFlags: 0
@@ -3615,3 +3635,64 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2014236647}
   m_CullTransparentMesh: 1
+--- !u!1001 &4675813594347329741
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1716256804283096787, guid: 676b53e21f595844bb524940df64811a, type: 3}
+      propertyPath: m_Name
+      value: Potion of Heart
+      objectReference: {fileID: 0}
+    - target: {fileID: 4577705045648026625, guid: 676b53e21f595844bb524940df64811a, type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4577705045648026625, guid: 676b53e21f595844bb524940df64811a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -66.32832
+      objectReference: {fileID: 0}
+    - target: {fileID: 4577705045648026625, guid: 676b53e21f595844bb524940df64811a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.2631054
+      objectReference: {fileID: 0}
+    - target: {fileID: 4577705045648026625, guid: 676b53e21f595844bb524940df64811a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4577705045648026625, guid: 676b53e21f595844bb524940df64811a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4577705045648026625, guid: 676b53e21f595844bb524940df64811a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4577705045648026625, guid: 676b53e21f595844bb524940df64811a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4577705045648026625, guid: 676b53e21f595844bb524940df64811a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4577705045648026625, guid: 676b53e21f595844bb524940df64811a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4577705045648026625, guid: 676b53e21f595844bb524940df64811a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4577705045648026625, guid: 676b53e21f595844bb524940df64811a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7983572211802000476, guid: 676b53e21f595844bb524940df64811a, type: 3}
+      propertyPath: consumable
+      value: 
+      objectReference: {fileID: 1826059379}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 676b53e21f595844bb524940df64811a, type: 3}

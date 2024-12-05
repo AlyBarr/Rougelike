@@ -42,7 +42,13 @@ public class UIManager : MonoBehaviour {
     }
   }
 
-  private void Start() => AddMessage("Hello and welcome, adventurer, to yet another dungeon!", "#0da2ff"); //Light blue
+  private void Start(){
+    AddMessage("Hello and welcome, adventurer, to yet another dungeon!", "#0da2ff"); //Light blue
+    AddMessage("Your goal is to find a potion and escape!", "#0da2ff"); //Light blue
+    AddMessage("If a monster touches you - you die and there are many here from flyingeye to firespitters!", "#0da2ff"); //Light blue
+    AddMessage("To move around please use the arrow keys. Pick up items with G, Drop with D, I for inventory", "#0da2ff"); //Light blue
+    AddMessage("To view your past messages with V or view the pause message with ESC!", "#0da2ff"); //Light blue
+  }
 
   public void SetHealthMax(int maxHp) {
     hpSlider.maxValue = maxHp;
