@@ -78,15 +78,22 @@ sealed class Player : MonoBehaviour, Controls.IPlayerActions {
     }
   }
 
-  private void MovePlayer() {
+  private float movementSpeed = 30f;
+  
+
+
+private void MovePlayer() {
     Vector2 direction = controls.Player.Movement.ReadValue<Vector2>();
     Vector2 roundedDirection = new Vector2(Mathf.Round(direction.x), Mathf.Round(direction.y));
-    Vector3 futurePosition = transform.position + (Vector3)roundedDirection;
+    Vector3 moveStep = (Vector3)direction.normalized * movementSpeed * Time.deltaTime;
+    
+    Vector3 futurePosition = transform.position + moveStep;
 
     if (IsValidPosition(futurePosition)) {
-      moveKeyHeld = Action.BumpAction(GetComponent<Actor>(), roundedDirection); //If we bump into an entity, moveKeyHeld is set to false.
+        transform.position += moveStep;
+        moveKeyHeld = Action.BumpAction(GetComponent<Actor>(), roundedDirection);
     }
-  }
+}
 
   private bool IsValidPosition(Vector3 futurePosition) {
     Vector3Int gridPosition = MapManager.instance.FloorMap.WorldToCell(futurePosition);
