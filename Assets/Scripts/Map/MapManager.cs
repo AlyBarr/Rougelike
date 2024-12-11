@@ -6,13 +6,13 @@ public class MapManager : MonoBehaviour {
   public static MapManager instance;
 
   [Header("Map Settings")]
-  [SerializeField] private int width = 75;
-  [SerializeField] private int height = 40;
-  [SerializeField] private int roomMaxSize = 10;
-  [SerializeField] private int roomMinSize = 6;
-  [SerializeField] private int maxRooms = 30;
-  [SerializeField] private int maxMonstersPerRoom = 2;
-  [SerializeField] private int maxItemsPerRoom = 2;
+  [SerializeField] private int width = 350;
+  [SerializeField] private int height = 200;
+  [SerializeField] private int roomMaxSize = 30;
+  [SerializeField] private int roomMinSize = 8;
+  [SerializeField] private int maxRooms = 10;
+  [SerializeField] private int maxMonstersPerRoom = 4;
+  [SerializeField] private int maxItemsPerRoom = 5;
 
   [Header("Tiles")]
   [SerializeField] private TileBase floorTile;
