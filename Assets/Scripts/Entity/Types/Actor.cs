@@ -5,15 +5,14 @@ public class Actor : Entity {
   [SerializeField] private bool isAlive = true; //read-only
   [SerializeField] private int fieldOfViewRange = 8;
   [SerializeField] private List<Vector3Int> fieldOfView = new List<Vector3Int>();
-  [SerializeField] private AI aI;
   [SerializeField] private Inventory inventory;
-
+  [SerializeField] private AI aI;
   AdamMilVisibility algorithm;
 
   public bool IsAlive { get => isAlive; set => isAlive = value; }
   public List<Vector3Int> FieldOfView { get => fieldOfView; }
-
   public Inventory Inventory { get => inventory; }
+  public AI AI { get => aI; set => aI = value; }
 
   private void OnValidate() {
     if (GetComponent<Inventory>()) {
@@ -24,7 +23,6 @@ public class Actor : Entity {
       aI = GetComponent<AI>();
     }
   }
-
 
   private void Start() {
     AddToGameManager();
@@ -38,7 +36,6 @@ public class Actor : Entity {
     algorithm = new AdamMilVisibility();
     UpdateFieldOfView();
   }
-
 
   public void UpdateFieldOfView() {
     Vector3Int gridPosition = MapManager.instance.FloorMap.WorldToCell(transform.position);

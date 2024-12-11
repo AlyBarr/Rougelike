@@ -31,12 +31,12 @@ public class RectangularRoom {
   /// <summary>
   /// Return True if this room overlaps with another RectangularRoom.
   /// </summary>
-  public bool Overlaps(List<RectangularRoom> otherRooms) {
-    foreach (RectangularRoom otherRoom in otherRooms) {
-      if (GetBounds().Intersects(otherRoom.GetBounds())) {
-        return true;
-      }
+  public bool Overlaps(List<RectangularRoom> rooms) {
+        foreach (var room in rooms) {
+            if (X < room.X + room.Width && X + Width > room.X && Y < room.Y + room.Height && Y + Height > room.Y) {
+                return true; // Rooms overlap
+            }
+        }
+        return false;
     }
-    return false;
-  }
 }

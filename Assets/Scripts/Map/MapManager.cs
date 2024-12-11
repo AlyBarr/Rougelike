@@ -12,7 +12,6 @@ public class MapManager : MonoBehaviour {
   [SerializeField] private int roomMinSize = 6;
   [SerializeField] private int maxRooms = 30;
   [SerializeField] private int maxMonstersPerRoom = 2;
-
   [SerializeField] private int maxItemsPerRoom = 2;
 
   [Header("Tiles")]
@@ -63,53 +62,38 @@ public class MapManager : MonoBehaviour {
 
   ///<summary>Return True if x and y are inside of the bounds of this map. </summary>
   public bool InBounds(int x, int y) => 0 <= x && x < width && 0 <= y && y < height;
-  private Vector3Int FindSpawnPosition() {
-    // Randomly select a room from the list of rooms
-    RectangularRoom room = rooms[Random.Range(0, rooms.Count)];
-
-    // Loop through the room's area to find a valid position
-    for (int x = room.X; x < room.X + room.Width; x++) {
-        for (int y = room.Y; y < room.Y + room.Height; y++) {
-            Vector3Int tilePosition = new Vector3Int(x, y, 0);
-
-            // Check if the tile is a floor tile and not occupied by any obstacles
-            if (floorMap.HasTile(tilePosition) && !obstacleMap.HasTile(tilePosition)) {
-                // Ensure that the position is within the overall map bounds before returning
-                if (InBounds(x, y)) {
-                    return tilePosition; // Return the valid spawn position within bounds
-                }
-            }
-        }
-    }
-
-    // If no valid position is found, return a fallback position at the top-left corner of the room
-    // or you can return (0,0) for fallback within map bounds
-    Debug.LogWarning("No valid spawn position found in the selected room.");
-    return new Vector3Int(room.X, room.Y, 0);  // Fallback to top-left of the room
-  }
-
 
   public void CreateEntity(string entity, Vector2 position) {
-    
-        // Debug to ensure entity is being created
-    Debug.Log($"Creating entity: {entity} at position {position}");
+    GameObject prefab = Resources.Load<GameObject>($"Prefabs/{entity}");
+    //if (prefab != null) {
+       // Instantiate(prefab, position, Quaternion.identity);
+    //} else {
+    //    Debug.LogError($"Entity prefab '{entity}' not found in Resources/Prefabs");
+    //}
 
     switch (entity) {
       case "Player":
-        Instantiate(Resources.Load<GameObject>("Player"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity).name = "Player";
+        Instantiate(Resources.Load<GameObject>($"Prefabs/Player"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity).name = "$Prefabs/Player";
         break;
       case "FireSprite":
-        Instantiate(Resources.Load<GameObject>("FireSprite"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity).name = "FireSprite";
+        Instantiate(Resources.Load<GameObject>($"Prefabs/FireSprite"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity).name = $"Prefabs/FireSprite";
         break;
-      case "FlyMob":
-        Instantiate(Resources.Load<GameObject>("FlyMob"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity).name = "FlyMob";
+      case "FlyingMob":
+        Instantiate(Resources.Load<GameObject>($"Prefabs/FlyMob"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity).name = $"Prefabs/FlyMob";
         break;
       case "Potion of Heart":
-        Instantiate(Resources.Load<GameObject>("Potion of Heart"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity).name = "Potion of Heart";
+        Instantiate(Resources.Load<GameObject>($"Prefabs/Potion of Heart"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity).name = $"Prefabs/Potion of Heart";
         break;
-      default:
-        Debug.LogError("Entity not found");
+      case "Fireball Scroll":
+        Instantiate(Resources.Load<GameObject>($"Prefabs/Fireball Scroll"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity).name = $"Prefabs/Fireball Scroll";
         break;
+      case "Confusion Scroll":
+        Instantiate(Resources.Load<GameObject>($"Prefabs/Confusion Scroll"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity).name = $"Prefabs/Confusion Scroll";
+        break;
+      case "Lightning Scroll":
+        Instantiate(Resources.Load<GameObject>($"Prefabs/Lightning Scroll"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity).name = $"Prefabs/Lightning Scroll";
+        break;
+  
     }
   }
 
@@ -146,6 +130,14 @@ public class MapManager : MonoBehaviour {
         entity.GetComponent<SpriteRenderer>().enabled = false;
       }
     }
+  }
+
+  public bool IsValidPosition(Vector3 futurePosition) {
+    Vector3Int gridPosition = floorMap.WorldToCell(futurePosition);
+    if (!InBounds(gridPosition.x, gridPosition.y) || obstacleMap.HasTile(gridPosition)) {
+      return false;
+    }
+    return true;
   }
 
   private void AddTileMapToDictionary(Tilemap tilemap) {

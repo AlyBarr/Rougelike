@@ -2,50 +2,48 @@ using System.Collections.Generic;
 using UnityEngine;
 
 sealed class ProcGen {
-
+  
   /// Generate a new dungeon map.
+ 
   public void GenerateDungeon(int mapWidth, int mapHeight, int roomMaxSize, int roomMinSize, int maxRooms, int maxMonstersPerRoom, int maxItemsPerRoom, List<RectangularRoom> rooms) {
+    // Generate the rooms.
     for (int roomNum = 0; roomNum < maxRooms; roomNum++) {
-        int roomWidth = Random.Range(roomMinSize, roomMaxSize);
-        int roomHeight = Random.Range(roomMinSize, roomMaxSize);
+      int roomWidth = Random.Range(roomMinSize, roomMaxSize);
+      int roomHeight = Random.Range(roomMinSize, roomMaxSize);
 
-        // Ensure the room is placed within the map boundaries.
-        int roomX = Random.Range(0, mapWidth - roomWidth - 1);
-        int roomY = Random.Range(0, mapHeight - roomHeight - 1);
+      int roomX = Random.Range(0, mapWidth - roomWidth - 1);
+      int roomY = Random.Range(0, mapHeight - roomHeight - 1);
 
-        RectangularRoom newRoom = new RectangularRoom(roomX, roomY, roomWidth, roomHeight);
+      RectangularRoom newRoom = new RectangularRoom(roomX, roomY, roomWidth, roomHeight);
 
-        // Log room size and placement
-        Debug.Log($"Room {roomNum}: Position ({roomX}, {roomY}), Size ({roomWidth}, {roomHeight})");
+      //Check if this room intersects with any other rooms
+      if (newRoom.Overlaps(rooms)) {
+        continue;
+      }
+      //If there are no intersections then the room is valid.
 
-        // Check for overlap with existing rooms.
-        if (newRoom.Overlaps(rooms)) {
-            continue;
-        }
-
-        // Dig out the room (floor and walls).
-        for (int x = roomX; x < roomX + roomWidth; x++) {
-            for (int y = roomY; y < roomY + roomHeight; y++) {
-                if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) {
-                    if (SetWallTileIfEmpty(new Vector3Int(x, y))) {
-                        continue;
-                    }
-                } else {
-                    SetFloorTile(new Vector3Int(x, y));
-                }
+      //Dig out this rooms inner area and builds the walls.
+      for (int x = roomX; x < roomX + roomWidth; x++) {
+        for (int y = roomY; y < roomY + roomHeight; y++) {
+          if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) {
+            if (SetWallTileIfEmpty(new Vector3Int(x, y))) {
+              continue;
             }
+          } else {
+            SetFloorTile(new Vector3Int(x, y));
+          }
         }
+      }
 
-        // Dig tunnels between rooms.
-        if (rooms.Count != 0) {
-            TunnelBetween(rooms[rooms.Count - 1], newRoom);
-        }
+      if (rooms.Count != 0) {
+        //Dig out a tunnel between this room and the previous one.
+        TunnelBetween(rooms[rooms.Count - 1], newRoom);
+      }
 
-        // Place monsters in the room.
-        PlaceEntities(rooms, maxMonstersPerRoom, maxItemsPerRoom);
-        rooms.Add(newRoom);
+      PlaceEntities(newRoom, maxMonstersPerRoom, maxItemsPerRoom);
+
+      rooms.Add(newRoom);
     }
-
     // Get the first room where the player should spawn
     RectangularRoom firstRoom = rooms[0];
 
@@ -54,11 +52,8 @@ sealed class ProcGen {
         firstRoom.X + firstRoom.Width / 2,
         firstRoom.Y + firstRoom.Height / 2
     );
-
-    // Log the room center
-    Debug.Log($"Room Center for Room 0: ({center2D.x}, {center2D.y})");
-
-    // Ensure the spawn position is within the room's bounds and not on the walls
+    //The first room, where the player starts.
+      // Ensure the spawn position is within the room's bounds and not on the walls
     Vector3Int spawnPosition = new Vector3Int(center2D.x, center2D.y, 0);
 
     if (spawnPosition.x <= firstRoom.X + 1 || spawnPosition.x >= firstRoom.X + firstRoom.Width - 1 ||
@@ -77,7 +72,8 @@ sealed class ProcGen {
     // Convert the spawn position to Vector2 for spawning (for MapManager)
     Vector2 spawnPosition2D = MapManager.instance.FloorMap.CellToWorld(spawnPosition);
     MapManager.instance.CreateEntity("Player", spawnPosition2D);
-}
+    //MapManager.instance.CreateEntity("Player", rooms[0].Center());
+  }
 
   /// Return an L-shaped tunnel between these two points using Bresenham lines.
 
@@ -123,92 +119,69 @@ sealed class ProcGen {
     }
   }
 
-  
   private void SetFloorTile(Vector3Int pos) {
     if (MapManager.instance.ObstacleMap.GetTile(pos)) {
       MapManager.instance.ObstacleMap.SetTile(pos, null);
     }
     MapManager.instance.FloorMap.SetTile(pos, MapManager.instance.FloorTile);
+  }
+
+  private void PlaceEntities(RectangularRoom newRoom, int maximumMonsters, int maximumItems) {
+    int numberOfMonsters = Random.Range(0, maximumMonsters + 1);
+    int numberOfItems = Random.Range(0, maximumItems + 1);
+
+    for (int monster = 0; monster < numberOfMonsters;) {
+      int x = Random.Range(newRoom.X, newRoom.X + newRoom.Width);
+      int y = Random.Range(newRoom.Y, newRoom.Y + newRoom.Height);
+
+      if (x == newRoom.X || x == newRoom.X + newRoom.Width - 1 || y == newRoom.Y || y == newRoom.Y + newRoom.Height - 1) {
+        continue;
+      }
+
+      for (int actor = 0; actor < GameManager.instance.Actors.Count; actor++) {
+        Vector3Int pos = MapManager.instance.FloorMap.WorldToCell(GameManager.instance.Actors[actor].transform.position);
+
+        if (pos.x == x && pos.y == y) {
+          return;
+        }
+      }
+
+      if (Random.value < 0.8f) {
+        MapManager.instance.CreateEntity("FlyMob", new Vector2(x, y));
+      } else {
+        MapManager.instance.CreateEntity("FireSprite", new Vector2(x, y));
+      }
+      monster++;
     }
-  private void PlaceEntities(List<RectangularRoom> rooms, int maximumMonsters, int maximumItems) {
-    foreach (var room in rooms) {
-        int numberOfMonsters = Random.Range(0, maximumMonsters + 1);
-        int numberOfItems = Random.Range(0, maximumItems + 1);
 
-        // Place monsters
-        for (int monster = 0; monster < numberOfMonsters;) {
-            int x = Random.Range(room.X + 1, room.X + room.Width - 1); // Randomize position inside room bounds
-            int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
+    for (int item = 0; item < numberOfItems;) {
+      int x = Random.Range(newRoom.X, newRoom.X + newRoom.Width);
+      int y = Random.Range(newRoom.Y, newRoom.Y + newRoom.Height);
 
-            // Skip spawn if it's at the edge (walls) of the room
-            if (x == room.X || x == room.X + room.Width - 1 || y == room.Y || y == room.Y + room.Height - 1) {
-                continue;
-            }
+      if (x == newRoom.X || x == newRoom.X + newRoom.Width - 1 || y == newRoom.Y || y == newRoom.Y + newRoom.Height - 1) {
+        continue;
+      }
 
-            // Check if there are any existing actors or items at this position
-            bool overlap = false;
-            foreach (var actor in GameManager.instance.Actors) {
-                Vector3Int actorPos = MapManager.instance.FloorMap.WorldToCell(actor.transform.position);
-                if (actorPos.x == x && actorPos.y == y) {
-                    overlap = true;
-                    break;
-                }
-            }
+      for (int entity = 0; entity < GameManager.instance.Entities.Count; entity++) {
+        Vector3Int pos = MapManager.instance.FloorMap.WorldToCell(GameManager.instance.Entities[entity].transform.position);
 
-            foreach (var entity in GameManager.instance.Entities) {
-                Vector3Int entityPos = MapManager.instance.FloorMap.WorldToCell(entity.transform.position);
-                if (entityPos.x == x && entityPos.y == y) {
-                    overlap = true;
-                    break;
-                }
-            }
-
-            // If there's no overlap, spawn a monster
-            if (!overlap) {
-                if (Random.value < 0.8f) {
-                    MapManager.instance.CreateEntity("FireSprite", new Vector2(x, y));
-                } else {
-                    MapManager.instance.CreateEntity("FlyMob", new Vector2(x, y));
-                }
-                monster++;
-            }
+        if (pos.x == x && pos.y == y) {
+          return;
         }
+      }
 
-        // Place items
-        for (int item = 0; item < numberOfItems;) {
-            int x = Random.Range(room.X + 1, room.X + room.Width - 1); // Randomize position inside room bounds
-            int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
+      float randomValue = Random.value;
+      if (randomValue < 0.7f) {
+        MapManager.instance.CreateEntity("Potion of Heart", new Vector2(x, y));
+      } else if (randomValue < 0.8f) {
+        MapManager.instance.CreateEntity("Fireball Scroll", new Vector2(x, y));
+      } else if (randomValue < 0.9f) {
+        MapManager.instance.CreateEntity("Confusion Scroll", new Vector2(x, y));
+      } else {
+        MapManager.instance.CreateEntity("Lightning Scroll", new Vector2(x, y));
+      }
 
-            // Skip spawn if it's at the edge (walls) of the room
-            if (x == room.X || x == room.X + room.Width - 1 || y == room.Y || y == room.Y + room.Height - 1) {
-                continue;
-            }
-
-            // Check if there are any existing actors or items at this position
-            bool overlap = false;
-            foreach (var actor in GameManager.instance.Actors) {
-                Vector3Int actorPos = MapManager.instance.FloorMap.WorldToCell(actor.transform.position);
-                if (actorPos.x == x && actorPos.y == y) {
-                    overlap = true;
-                    break;
-                }
-            }
-
-            foreach (var entity in GameManager.instance.Entities) {
-                Vector3Int entityPos = MapManager.instance.FloorMap.WorldToCell(entity.transform.position);
-                if (entityPos.x == x && entityPos.y == y) {
-                    overlap = true;
-                    break;
-                }
-            }
-
-            // If there's no overlap, spawn an item
-            if (!overlap) {
-                MapManager.instance.CreateEntity("Potion of Heart", new Vector2(x, y));
-                item++;
-            }
-        }
+      item++;
     }
   }
 }
-
